@@ -1,0 +1,23 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# uv
+.uv/
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+*.pdf

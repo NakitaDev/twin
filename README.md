@@ -19,42 +19,47 @@ The whole thing is one conversation loop:
 3. If it's a tool call, run the function, append the result to the history, and send it back
 4. Repeat until the model returns a plain answer
 
-<!-- TODO: replace with your actual tools -->
 **Tools available to the model:**
 
-- `<tool_name>` — <what it does>
-- `<tool_name>` — <what it does>
+- `record_user_details` — logs a visitor's email (plus name/notes if given) when they want to get in touch
+- `record_unknown_question` — logs any question the twin couldn't answer, instead of letting it make one up
 
-<!-- TODO: describe how the persona context is loaded -->
-**Persona context** comes from `<file>`, which is <what it contains and how it's injected>.
+Both tools push a notification via [Pushover](https://pushover.net) so I see the alert on my phone in real time.
+
+**Persona context** comes from `context.py`, which builds the system prompt at import time by combining `summary.txt` (a short, hand-written bio) with the full text of `linkedin.pdf` (extracted via `pypdf`). That combined prompt tells the model who it's representing, what it can talk about, and when to use the tools above.
 
 ## Setup
 
+This project uses [uv](https://docs.astral.sh/uv/):
+
 ```bash
-pip install -r requirements.txt
-cp .env.example .env   # fill in your API keys
+uv sync
 ```
 
-Required environment variables:
+Create a `.env` file with:
 
-<!-- TODO: replace with your actual variables -->
-- `<API_KEY>` — <what it's for>
-- `<OTHER_KEY>` — <what it's for>
+- `OPENROUTER_API_KEY` — key for [OpenRouter](https://openrouter.ai), used to reach the model (`openai/gpt-5.4-mini` by default, set in `app.py`)
+- `PUSHOVER_USER` — Pushover user key, for the notification tools
+- `PUSHOVER_TOKEN` — Pushover application token, for the notification tools
+
+You'll also need `linkedin.pdf` (an export of your own LinkedIn profile) and `summary.txt` (a short bio) in the project root — `context.py` reads both to build the persona.
 
 ## Run
 
 ```bash
-python app.py
+uv run app.py
 ```
 
-<!-- TODO: confirm — Gradio? CLI? -->
-Opens a `<Gradio UI / terminal chat>` at `<address>`.
+Opens a Gradio chat UI (default `http://127.0.0.1:7860`).
 
 ## Files
 
-<!-- TODO: replace with your actual files -->
-- `app.py` — <what it does>
-- `<file>.py` — <what it does>
+- `app.py` — Gradio UI and the hand-rolled chat/tool-calling loop
+- `context.py` — builds the system prompt from `summary.txt` + `linkedin.pdf`
+- `tools.py` — tool definitions, the Pushover-backed implementations, and the dispatcher that runs them
+- `styles.py` — CSS/JS and example prompts for the Gradio UI
+- `summary.txt` — short hand-written bio injected into the persona
+- `linkedin.pdf` — LinkedIn profile export, parsed for persona context
 
 ## Notes
 
